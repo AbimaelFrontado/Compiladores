@@ -131,14 +131,3 @@ if ast_root:
     generate_dot(ast_root)
 else:
     print("\nResultado: La cadena NO es válida.")
- 
- 
-
-# Ejemplo de uso
-entrada = "int + int"
-ast_root = parse(entrada)
-if ast_root:
-    print("\nResultado: La cadena es válida.")
-    generate_dot(ast_root)
-else:
-    print("\nResultado: La cadena NO es válida.")
