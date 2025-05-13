@@ -46,12 +46,12 @@ def cargar_grammar_desde_csv(nombre_archivo):
 
 def parse(input_str):
     tokens = input_str.split() + ['$']
-    stack = ['$', 'E']
+    stack = ['$', 'Programa']
     node_stack = []
-    root_node = Node('E')  # Nodo raíz inicial
+    root_node = Node('Programa')  # Nodo raíz inicial
     node_stack.append(root_node)
     
-    productions = cargar_grammar_desde_csv('grammar_table.csv')
+    productions = cargar_grammar_desde_csv('tabla_ll1.csv')
     
     print("Tokens:", tokens)
     i = 0
@@ -120,6 +120,17 @@ def generate_dot(root_node, filename='arbol.dot'):
     with open(filename, 'w') as f:
         f.write(dot_content)
     print(f"Código DOT generado en: {filename}")
+ 
+ 
+
+# Ejemplo de uso
+entrada = "Imprimir ( Id + Id )"
+ast_root = parse(entrada)
+if ast_root:
+    print("\nResultado: La cadena es válida.")
+    generate_dot(ast_root)
+else:
+    print("\nResultado: La cadena NO es válida.")
  
  
 
