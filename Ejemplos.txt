@@ -1,0 +1,7 @@
+Imprimir ( Id + Id )
+Si( Id == Id ) { Imprimir ( Id + Id ) }
+Func Entero Id ( Entero Id , Entero Id ) { Retornar Id * Num }
+
+Imprimir ( Id , )
+Entero Id () { Retornar Id }
+Si ( Id + Id  = ) { Imprimir ( Num ) }
