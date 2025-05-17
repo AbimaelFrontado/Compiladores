@@ -1,5 +1,91 @@
 import csv
+import re
 
+# Definiciones léxicas (tokens y sus patrones)
+token_specification = [
+    # Palabras clave
+    ('Imprimir',  r'Imprimir'),
+    ('Sino',      r'Sino'),
+    ('Si',        r'Si'), 
+    ('Para',      r'Para'),
+    ('Mientras',  r'Mientras'),
+    ('Break',     r'Break'),
+    ('Func',      r'Func'),
+    ('Retornar',  r'Retornar'),
+    ('en',        r'en'),
+    
+    # Tipos de datos
+    ('Entero',    r'Entero'),
+    ('Decimal',   r'Decimal'),
+    ('Texto',     r'Texto'),
+    
+    # Identificadores y valores
+    ('Numero',    r'\d+(\.\d+)?'),
+    ('Identificador', r'[a-zA-Z_]\w*'),
+    ('Literal',   r'"[^"\n]*"'),
+    
+    # Operadores
+    ('OperadorAritmetico', r'[\+\-\*/=]'),
+    ('OperadorRelacional', r'(<=|>=|==|!=|<|>)'),
+    ('OperadorLogico',     r'\b(y|o)\b'),
+    
+    # Símbolos y puntuación
+    ('LParen',    r'\('),
+    ('RParen',    r'\)'),
+    ('LBrace',    r'\{'),
+    ('RBrace',    r'\}'),
+    ('Comma',     r','),
+    
+    # Espacios y comentarios
+    ('SKIP',      r'[ \t]+'),
+    ('NEWLINE',   r'\n'),
+    ('MISMATCH',  r'.'),  # Para detectar errores léxicos
+]
+
+token_regex = '|'.join(f'(?P<{name}>{pattern})' for name, pattern in token_specification)
+
+def lexer(code):
+    tokens = []
+    for mo in re.finditer(token_regex, code):
+        kind = mo.lastgroup
+        value = mo.group()
+        if kind == 'Numero':
+            tokens.append(('Numero' ))
+        elif kind == 'Imprimir':
+            tokens.append(('Imprimir'))      
+        elif kind == 'Sino':
+            tokens.append(('Sino'))   
+        elif kind == 'Si':
+            tokens.append(('Si'))   
+        elif kind == 'Para':
+            tokens.append(('Para'))  
+        elif kind == 'Mientras':
+            tokens.append(('Mientras'))   
+        elif kind == 'Break':
+            tokens.append(('Break'))   
+        elif kind == 'Func':
+            tokens.append(('Func'))   
+        elif kind == 'Retornar':
+            tokens.append(('retornar'))   
+        elif kind == 'En':
+            tokens.append(('En'))  
+        elif kind == 'Entero':
+            tokens.append(('Entero'))   
+        elif kind == 'Decimal':
+            tokens.append(('Decimal'))   
+        elif kind == 'Texto':
+            tokens.append(('Texto'))   
+        elif kind == 'Identificador':
+            tokens.append(('Identificador')) 
+        elif kind == 'Literal':
+            tokens.append(('Literal'))
+        elif kind in ('OperadorAritmetico', 'OperadorRelacional', 'OperadorLogico', 'LParen', 'RParen', 'LBrace', 'RBrace', 'Comma'):
+            tokens.append((value ))  # Tratamos operadores y signos como su propio tipo
+        elif kind == 'SKIP' or kind == 'NEWLINE':
+            continue
+        elif kind == 'MISMATCH':
+            raise RuntimeError(f'Caracter inesperado: {value}')
+    return tokens
 class Node:
     _counter = 1  # Variable de clase para llevar la cuenta
     
@@ -45,7 +131,7 @@ def cargar_grammar_desde_csv(nombre_archivo):
     return tabla
 
 def parse(input_str):
-    tokens = input_str.split() + ['$']
+    tokens = lexer(input_str) + ['$']
     stack = ['$', 'Programa']
     node_stack = []
     root_node = Node('Programa')  # Nodo raíz inicial
@@ -71,7 +157,7 @@ def parse(input_str):
             print("Análisis exitoso!")
             return root_node
 
-        actual = tokens[i]
+        actual = tokens[i] 
 
         if x == "epsilon":
             print(f"  Acción: Procesar epsilon (continuar)")
@@ -121,13 +207,34 @@ def generate_dot(root_node, filename='arbol.dot'):
         f.write(dot_content)
     print(f"Código DOT generado en: {filename}")
  
- 
+def leer_entradas_desde_txt(nombre_archivo):
+    try:
+        with open(nombre_archivo, 'r', encoding='utf-8') as f:
+            contenido = f.read().strip()
+            return contenido if contenido else None
+    except FileNotFoundError:
+        print(f"Error: No se encontró el archivo '{nombre_archivo}'")
+        return None
 
-# Ejemplo de uso
-entrada = "Imprimir ( Id + Id )"
-ast_root = parse(entrada)
-if ast_root:
-    print("\nResultado: La cadena es válida.")
-    generate_dot(ast_root)
-else:
-    print("\nResultado: La cadena NO es válida.")
+entrada = leer_entradas_desde_txt('Ejemplos.txt')
+
+if not entrada :
+    print(" El archivo 'Ejemplos.txt' está vacío o no contiene entradas válidas.")
+else: 
+        
+    ast_root = parse(entrada)
+    if ast_root:
+        print("  Resultado: La cadena es válida.")
+        generate_dot(ast_root,  'arbol.dot')
+    else:
+        print(" Resultado: La cadena NO es válida.")
+
+      
+
+
+
+
+
+
+
+
