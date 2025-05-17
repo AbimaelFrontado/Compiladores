@@ -125,11 +125,17 @@ class LL1Grammar:
             print(f"FOLLOW({symbol}) = {{{content}}}")
 
 
-# ==== EJEMPLO DE USO ====
 if __name__ == "__main__":
     grammar = {
-         "Programa": [["Sentencia", "Programa"], ["Funcion", "Programa"], [EPSILON]],
-        "Sentencia": [ ["Imprimir", "(", "Expresion", ")"], ["Si", "(", "Condicion", ")", "{", "ListaSentencias", "}", "SinoOpcional"], ["Asignacion"], ["Para", "(", "Iterador", "en", "Numero", "RangoOpcional", ")", "{", "ListaSentencias", "}"], ["Mientras", "(", "Condicion", ")", "{", "ListaSentencias", "}"], ["Break"] ],
+     "Programa": [["Sentencia", "Programa"], ["Funcion", "Programa"], [EPSILON]],
+        "Sentencia": [
+            ["Imprimir", "(", "Expresion", ")"],
+            ["Si", "(", "Condicion", ")", "{", "ListaSentencias", "}", "SinoOpcional"],
+            ["Asignacion"],
+            ["Para", "(", "Iterador", "en", "Numero", "RangoOpcional", ")", "{", "ListaSentencias", "}"],
+            ["Mientras", "(", "Condicion", ")", "{", "ListaSentencias", "}"],
+            ["Break"]
+        ],
         "Funcion": [["Func", "Tipo", "Identificador", "(", "ListaParametrosOpcional", ")", "{", "ListaSentencias", "RetornoOpcional", "}"]], 
         "ListaParametrosOpcional": [["ListaParametros"], [EPSILON]],
         "ListaParametros": [["Asignacion", "ListaParametros'"]],
@@ -141,17 +147,18 @@ if __name__ == "__main__":
         "SinoOpcional": [["Sino", "Sentencia"], [EPSILON]], 
         "ListaSentencias": [["Sentencia", "ListaSentencias"], [EPSILON]], 
         "Asignacion": [["Tipo", "Identificador", "AsignacionOpcional"]],
-        "AsignacionOpcional": [[EPSILON], ["OperadorAritmetico", "Identificador"]], 
-        "Tipo": [["Entero"], ["Decimal"], ["Texto"]],
-        "Identificador": [["Id"], ["Numero"], ["Literal"]], 
+        "AsignacionOpcional": [[EPSILON], ["OperadorAritmetico", "Variable"]], 
+        "Tipo": [["Entero"], ["Decimal"], ["Texto"]],  
         "OperadorAritmetico": [["+"], ["-"], ["/"], ["*"], ["="]],
         "OperadorRelacional": [["<="], [">="], ["=="], ["!="]],
         "OperadorLogico": [["y", "Condicion"], ["o", "Condicion"], [EPSILON]], 
         "Condicion": [["Expresion", "OperadorRelacional", "Expresion", "OperadorLogico"]], 
         "Expresion": [["Termino", "Expresion'"]],
         "Expresion'": [["OperadorAritmetico", "Termino", "Expresion'"], [EPSILON]], 
-        "Termino": [["Identificador", "OperacionSecundaria"], ["(", "Expresion", ")"]],
+        "Termino": [["Variable", "OperacionSecundaria"], ["(", "Expresion", ")"]],
         "OperacionSecundaria": [["OperadorAritmetico", "Termino"], [EPSILON]],
+        "Variable": [["Identificador"],["Numero"],["Literal"]] 
+        
     }
 
     parser = LL1Grammar(grammar)
